@@ -23,6 +23,20 @@ const Login = ({ onLogin, onCancel }) => {
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState({ text: '', type: '' });
 
+  const readErrorMessage = async (response, fallbackMessage) => {
+    try {
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const payload = await response.json();
+        return payload?.error || payload?.message || fallbackMessage;
+      }
+      const text = await response.text();
+      return text || fallbackMessage;
+    } catch {
+      return fallbackMessage;
+    }
+  };
+
   const normalizeAuthUser = (serverUser, fallbackUser = {}) => {
     const merged = { ...fallbackUser, ...(serverUser || {}) };
     const resolvedName =
@@ -82,8 +96,8 @@ const Login = ({ onLogin, onCancel }) => {
         });
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || `Backend returned ${response.status}`);
+          const message = await readErrorMessage(response, `Backend returned ${response.status}`);
+          throw new Error(message);
         }
 
         const data = await response.json();
@@ -101,8 +115,8 @@ const Login = ({ onLogin, onCancel }) => {
 
         onLoginRef.current?.(normalizedGoogleUser);
         showStatus('Google sign-in successful.', 'success');
-      } catch {
-        // Ignore redirect errors here; they will be handled by the normal sign-in flow.
+      } catch (error) {
+        console.error('Google redirect login failed:', error);
       }
     };
 
@@ -170,10 +184,9 @@ const Login = ({ onLogin, onCancel }) => {
         })
       });
 
-      // Check if backend response is successful
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Backend returned ${response.status}`);
+        const message = await readErrorMessage(response, `Backend returned ${response.status}`);
+        throw new Error(message);
       }
 
       const data = await response.json();
@@ -193,6 +206,7 @@ const Login = ({ onLogin, onCancel }) => {
       onLogin(normalizedGoogleUser);
       showStatus('Google sign-in successful.', 'success');
     } catch (error) {
+      console.error('Google sign-in failed:', error);
       if (error.code === 'auth/popup-closed-by-user') {
         showStatus('Google sign-in was cancelled.', 'warning');
       } else if (error.code === 'auth/unauthorized-domain') {
@@ -202,6 +216,7 @@ const Login = ({ onLogin, onCancel }) => {
           await signInWithRedirect(auth, googleProvider);
           return;
         } catch (redirectError) {
+          console.error('Google sign-in redirect fallback failed:', redirectError);
           showStatus(redirectError.message || 'Google Sign-In Failed', 'error');
         }
       } else {
@@ -239,9 +254,9 @@ const Login = ({ onLogin, onCancel }) => {
           body: JSON.stringify({ name, age, email, password, uid: firebaseUser.uid })
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Signup sync failed');
+          if (!response.ok) {
+            const message = await readErrorMessage(response, 'Signup sync failed');
+            throw new Error(message);
         }
 
         const data = await response.json();
@@ -265,9 +280,9 @@ const Login = ({ onLogin, onCancel }) => {
           body: JSON.stringify({ email, password, uid: firebaseUser.uid })
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Login sync failed');
+          if (!response.ok) {
+            const message = await readErrorMessage(response, 'Login sync failed');
+            throw new Error(message);
         }
 
         const data = await response.json();
@@ -288,6 +303,7 @@ const Login = ({ onLogin, onCancel }) => {
       } else {
         showStatus(error.message || 'Authentication failed.', 'error');
       }
+      console.error('Email auth failed:', error);
     } finally {
       setLoading(false);
     }
