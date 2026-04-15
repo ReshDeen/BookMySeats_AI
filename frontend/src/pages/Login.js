@@ -295,6 +295,11 @@ const Login = ({ onLogin, onCancel }) => {
 
   const handleGuestLogin = () => onLogin({ name: 'Guest User', role: 'guest' });
 
+  const handleEmailSubmit = (event) => {
+    event.preventDefault();
+    handleEmailAuth();
+  };
+
   return (
     <div className="login-page-wrapper" style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/images/login_bg.jpeg')` }}>
       <button className="back-nav-btn" onClick={step === 'choice' ? onCancel : () => { setStep('choice'); clearStatus(); }}> 
@@ -327,53 +332,55 @@ const Login = ({ onLogin, onCancel }) => {
                 {statusMessage.text}
               </div>
             )}
-            
-            {mode === 'signup' && (
-              <>
-                <input id="fullName" name="fullName" className="ui-field" type="text" placeholder="Full Name" value={name} autoComplete="off" onChange={(e)=>setName(e.target.value)} />
-                <input id="age" name="age" className="ui-field" type="number" placeholder="Age" value={age} autoComplete="off" onChange={(e)=>setAge(e.target.value)} />
-              </>
-            )}
-            
-            <input id="email" name="email" className="ui-field" type="email" placeholder="Email Address" value={email} autoComplete="off" onChange={(e)=>setEmail(e.target.value)} />
-            <div className="password-field-wrap">
-              <input
-                id="password"
-                name="password"
-                className="ui-field password-field"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
-                value={password}
-                autoComplete="off"
-                onChange={(e)=>setPassword(e.target.value)}
-              />
-              <button
-                type="button"
-                className="password-toggle-btn"
-                onClick={() => setShowPassword((prev) => !prev)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? '🙈' : '👁️'}
-              </button>
-            </div>
-            
-            {mode === 'signup' && (
-              <div className="password-checker">
-                <div className={`rule-row ${validations.length ? 'valid' : 'invalid'}`}><span className="rule-icon">{validations.length ? '✅' : '○'}</span><span>6+ Characters</span></div>
-                <div className={`rule-row ${validations.upper ? 'valid' : 'invalid'}`}><span className="rule-icon">{validations.upper ? '✅' : '○'}</span><span>Uppercase (A-Z)</span></div>
-                <div className={`rule-row ${validations.lower ? 'valid' : 'invalid'}`}><span className="rule-icon">{validations.lower ? '✅' : '○'}</span><span>Lowercase (a-z)</span></div>
-                <div className={`rule-row ${validations.number ? 'valid' : 'invalid'}`}><span className="rule-icon">{validations.number ? '✅' : '○'}</span><span>Number (0-9)</span></div>
-                <div className={`rule-row ${validations.special ? 'valid' : 'invalid'}`}><span className="rule-icon">{validations.special ? '✅' : '○'}</span><span>Symbol (@#$%&*!)</span></div>
-              </div>
-            )}
 
-            <button 
-              className="ui-continue-btn" 
-              onClick={handleEmailAuth} 
-              disabled={loading || (mode === 'signup' && !allValid)}
-            >
-              {loading ? 'Processing...' : mode === 'signup' ? 'Finish & Login' : 'Sign In'}
-            </button>
+            <form onSubmit={handleEmailSubmit}>
+              {mode === 'signup' && (
+                <>
+                  <input id="fullName" name="fullName" className="ui-field" type="text" placeholder="Full Name" value={name} autoComplete="off" onChange={(e)=>setName(e.target.value)} />
+                  <input id="age" name="age" className="ui-field" type="number" placeholder="Age" value={age} autoComplete="off" onChange={(e)=>setAge(e.target.value)} />
+                </>
+              )}
+
+              <input id="email" name="email" className="ui-field" type="email" placeholder="Email Address" value={email} autoComplete="off" onChange={(e)=>setEmail(e.target.value)} />
+              <div className="password-field-wrap">
+                <input
+                  id="password"
+                  name="password"
+                  className="ui-field password-field"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password"
+                  value={password}
+                  autoComplete="off"
+                  onChange={(e)=>setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? '🙈' : '👁️'}
+                </button>
+              </div>
+
+              {mode === 'signup' && (
+                <div className="password-checker">
+                  <div className={`rule-row ${validations.length ? 'valid' : 'invalid'}`}><span className="rule-icon">{validations.length ? '✅' : '○'}</span><span>6+ Characters</span></div>
+                  <div className={`rule-row ${validations.upper ? 'valid' : 'invalid'}`}><span className="rule-icon">{validations.upper ? '✅' : '○'}</span><span>Uppercase (A-Z)</span></div>
+                  <div className={`rule-row ${validations.lower ? 'valid' : 'invalid'}`}><span className="rule-icon">{validations.lower ? '✅' : '○'}</span><span>Lowercase (a-z)</span></div>
+                  <div className={`rule-row ${validations.number ? 'valid' : 'invalid'}`}><span className="rule-icon">{validations.number ? '✅' : '○'}</span><span>Number (0-9)</span></div>
+                  <div className={`rule-row ${validations.special ? 'valid' : 'invalid'}`}><span className="rule-icon">{validations.special ? '✅' : '○'}</span><span>Symbol (@#$%&*!)</span></div>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="ui-continue-btn"
+                disabled={loading || (mode === 'signup' && !allValid)}
+              >
+                {loading ? 'Processing...' : mode === 'signup' ? 'Finish & Login' : 'Sign In'}
+              </button>
+            </form>
 
             <p className="toggle-mode-text" style={{ marginTop: '15px', fontSize: '13px', color: '#fff' }}>
               {mode === 'signup' ? "Already have an account? " : "Don't have an account? "}
