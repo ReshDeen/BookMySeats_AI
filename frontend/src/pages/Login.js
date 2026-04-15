@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { auth, googleProvider } from '../firebase'; 
 import { 
   signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword 
 } from "firebase/auth";
@@ -9,6 +11,7 @@ import { buildApiUrl } from '../utils/api';
 import '../styles/Login.css';
 
 const Login = ({ onLogin, onCancel }) => {
+  const onLoginRef = useRef(onLogin);
   const [step, setStep] = useState('choice'); // choice, details
   const [mode, setMode] = useState('signup'); // signup, signin
   const [email, setEmail] = useState('');
@@ -49,6 +52,61 @@ const Login = ({ onLogin, onCancel }) => {
   };
 
   const allValid = Object.values(validations).every(Boolean);
+
+  useEffect(() => {
+    onLoginRef.current = onLogin;
+  }, [onLogin]);
+
+  useEffect(() => {
+    const handleRedirectLogin = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (!result) return;
+
+        const user = result.user;
+        const idToken = await user.getIdToken();
+        const fallbackName = user.displayName || user.email?.split('@')[0] || 'User';
+
+        const response = await fetch(buildApiUrl('/api/auth/google-login'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token: idToken,
+            email: user.email,
+            name: fallbackName,
+            googleId: user.uid,
+            uid: user.uid,
+            profilePicture: user.photoURL
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `Backend returned ${response.status}`);
+        }
+
+        const data = await response.json();
+        const normalizedGoogleUser = normalizeAuthUser(data.user, {
+          ...(data.user || {}),
+          uid: user.uid,
+          token: idToken,
+          email: user.email,
+          displayName: fallbackName,
+          name: fallbackName,
+          photoURL: user.photoURL,
+          provider: 'google',
+          type: 'google'
+        });
+
+        onLoginRef.current?.(normalizedGoogleUser);
+        showStatus('Google sign-in successful.', 'success');
+      } catch {
+        // Ignore redirect errors here; they will be handled by the normal sign-in flow.
+      }
+    };
+
+    handleRedirectLogin();
+  }, []);
 
   const showStatus = (text, type = 'error') => {
     setStatusMessage({ text, type });
@@ -129,7 +187,18 @@ const Login = ({ onLogin, onCancel }) => {
       onLogin(normalizedGoogleUser);
       showStatus('Google sign-in successful.', 'success');
     } catch (error) {
-      if (error.code !== 'auth/popup-closed-by-user') {
+      if (error.code === 'auth/popup-closed-by-user') {
+        showStatus('Google sign-in was cancelled.', 'warning');
+      } else if (error.code === 'auth/unauthorized-domain') {
+        showStatus('Google sign-in is blocked because this domain is not added in Firebase Authorized Domains.', 'error');
+      } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
+        try {
+          await signInWithRedirect(auth, googleProvider);
+          return;
+        } catch (redirectError) {
+          showStatus(redirectError.message || 'Google Sign-In Failed', 'error');
+        }
+      } else {
         showStatus(error.message || 'Google Sign-In Failed', 'error');
       }
     } finally {
