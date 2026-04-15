@@ -12,9 +12,9 @@ import PaymentHistory from './pages/PaymentHistory';
 import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
 import './App.css';
-import { fetchJson } from './utils/api';
+import { buildApiUrl, fetchJson } from './utils/api';
 import { auth } from './firebase'; 
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { getRedirectResult, onAuthStateChanged, signOut } from "firebase/auth";
 
 // --- CONFIGURATION & UTILS ---
 const BOOKING_STORAGE_KEY = 'bookmyseat_currentBooking';
@@ -102,6 +102,53 @@ function App() {
       setAuthLoading(false);
     });
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const finalizeGoogleRedirect = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (!result?.user) return;
+
+        const firebaseUser = result.user;
+        const fallbackName = firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User';
+        const idToken = await firebaseUser.getIdToken();
+
+        const response = await fetch(buildApiUrl('/api/auth/google-login'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token: idToken,
+            email: firebaseUser.email,
+            name: fallbackName,
+            googleId: firebaseUser.uid,
+            uid: firebaseUser.uid,
+            profilePicture: firebaseUser.photoURL,
+          }),
+        });
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const normalized = normalizeUserProfile({
+          ...(data.user || {}),
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          name: fallbackName,
+          displayName: fallbackName,
+          provider: 'google',
+        });
+
+        setUser(normalized);
+        localStorage.setItem('user', JSON.stringify(normalized));
+        setCurrentView('home');
+        setSidebarOpen(false);
+      } catch (error) {
+        console.warn('Google redirect handling skipped:', error);
+      }
+    };
+
+    finalizeGoogleRedirect();
   }, []);
 
   useEffect(() => {
