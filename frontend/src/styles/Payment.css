@@ -1,0 +1,440 @@
+/* Container with Movie Background Overlay */
+.payment-page-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
+                url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1350&q=80');
+    background-size: cover;
+    background-position: center;
+    padding-bottom: 50px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+}
+
+/* Minimal Navbar: Logo + Greeting + Hamburger (Payment page only) */
+.payment-page-wrapper .minimal-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    background: #1a1212;
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+    position: relative;
+}
+
+.payment-page-wrapper .payment-nav-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.payment-page-wrapper .payment-nav-title h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+}
+
+.payment-page-wrapper .brand { 
+    font-size: 26px; 
+    font-weight: bold; 
+    letter-spacing: 1px;
+}
+
+.payment-page-wrapper .brand span { color: #ff0000; }
+
+.payment-page-wrapper .nav-right-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.payment-page-wrapper .payment-user-greeting {
+    font-size: 14px;
+    color: #ffffff;
+}
+
+/* Navigation Back Button */
+.back-pill {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    margin: 10px 60px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.back-pill:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Main Layout Card */
+.payment-main-card {
+    display: flex;
+    width: min(1050px, calc(100% - 120px));
+    margin: clamp(18px, 3vh, 32px) auto 0;
+    background: rgba(120, 40, 40, 0.85); /* Deep red tint from your UI */
+    backdrop-filter: blur(15px);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Left Section: Method Selectors */
+.method-selector {
+    width: 30%;
+    padding: 30px 20px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.1);
+}
+
+.method-selector h2 {
+    font-size: 18px;
+    margin-bottom: 25px;
+    font-weight: 500;
+}
+
+.selector-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 12px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.selector-item .icon {
+    margin-right: 12px;
+    font-size: 18px;
+}
+
+.selector-item.active {
+    background: white;
+    color: #782828;
+    font-weight: bold;
+    transform: scale(1.02);
+}
+
+/* Center Section: Inputs and QR */
+.input-details {
+    width: 40%;
+    padding: 40px;
+}
+
+.payment-status-card {
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(0,0,0,0.25);
+}
+
+.payment-status-card.success {
+    border-left: 4px solid #4caf50;
+}
+
+.payment-status-card.error {
+    border-left: 4px solid #ff4d4d;
+}
+
+.payment-status-card.warning {
+    border-left: 4px solid #f6c94c;
+}
+
+.method-view h3 {
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.dark-input {
+    width: 100%;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.5);
+    padding: 12px 5px;
+    color: white;
+    margin-bottom: 20px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.dark-input:focus {
+    border-bottom-color: #ff0000;
+}
+
+.input-row {
+    display: flex;
+    gap: 15px;
+}
+
+.qr-container {
+    text-align: center;
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.qr-container img {
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.hint-text {
+    font-size: 12px;
+    color: #ffcccc;
+    margin-bottom: 5px;
+}
+
+.bank-option {
+    padding: 12px;
+    background: rgba(255,255,255,0.1);
+    margin-bottom: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.bank-option:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Right Section: Summary */
+.order-summary-box {
+    width: 30%;
+    background: rgba(220, 220, 220, 0.95); /* Greyish panel */
+    padding: 30px 20px;
+    color: #333;
+}
+
+.order-summary-box h3 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: #000;
+}
+
+.movie-summary-card {
+    background: #f0f0f0;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border-left: 4px solid #ff0000;
+}
+
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.edit-link {
+    color: #ff0000;
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.price-breakdown {
+    margin-top: 20px;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.price-row.total {
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 15px;
+    color: #000;
+}
+
+.payable-badge {
+    background: #e0e0e0;
+    padding: 15px;
+    text-align: center;
+    margin-top: 40px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: 1px dashed #999;
+}
+
+/* Universal Action Buttons */
+.pay-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 15px;
+    margin-top: 10px;
+    background: #ff0000;
+    color: white;
+}
+
+.pay-btn:hover {
+    background: #cc0000;
+    transform: translateY(-2px);
+}
+
+/* Responsive Fix */
+@media (max-width: 850px) {
+    .payment-main-card {
+        flex-direction: column;
+    }
+    .method-selector, .input-details, .order-summary-box {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+}
+.payment-page-wrapper .hamburger-container {
+    position: relative;
+}
+
+.payment-page-wrapper .hamburger {
+    color: #ffffff;
+    font-size: 28px;
+    cursor: pointer;
+    padding-left: 10px;
+    line-height: 1;
+}
+
+.payment-page-wrapper .hamburger:hover {
+    color: #ff0000;
+}
+
+.payment-page-wrapper .dropdown-menu {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    background: #2b1b1b;
+    border-radius: 0;
+    width: min(280px, 78vw);
+    overflow-y: auto;
+    z-index: 3000;
+    border-left: 1px solid #3d2a2a;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+    padding: 30px 20px;
+    animation: paymentMenuSlideIn 0.25s ease;
+}
+
+.payment-page-wrapper .dropdown-close-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 6px;
+}
+
+.payment-page-wrapper .dropdown-close-btn:hover {
+    color: #ff0000;
+}
+
+.payment-page-wrapper .dropdown-menu::before {
+    content: 'Menu';
+    display: block;
+    color: #ff0000;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 0 10px 15px;
+    border-bottom: 1px solid #444;
+    margin-bottom: 8px;
+}
+
+.payment-page-wrapper .dropdown-menu a {
+    display: block;
+    padding: 15px 10px;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    border-bottom: 1px solid #3d2a2a;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.payment-page-wrapper .dropdown-menu a:hover {
+    background: #3d2a2a;
+    color: #ff0000;
+}
+
+.payment-page-wrapper .dropdown-menu a:last-child {
+    border-bottom: none;
+}
+
+.payment-page-wrapper .dropdown-menu a.menu-item-danger {
+    color: #ff4d4d;
+    font-weight: 700;
+}
+
+@keyframes paymentMenuSlideIn {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+.success-view {
+    text-align: center;
+    padding: 20px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.success-icon {
+    font-size: 50px;
+    color: #4bb543;
+    margin-bottom: 15px;
+    border: 3px solid #4bb543;
+    width: 80px;
+    height: 80px;
+    line-height: 75px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+}
+
+.success-view h3 {
+    color: #4bb543;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .payment-main-card {
+        width: calc(100% - 32px);
+    }
+
+    .payment-page-wrapper .minimal-nav {
+        padding: 16px 20px;
+    }
+
+    .payment-page-wrapper .brand {
+        font-size: 22px;
+    }
+}

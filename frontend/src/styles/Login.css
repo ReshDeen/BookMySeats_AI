@@ -1,0 +1,302 @@
+.login-page-wrapper {
+  position: fixed; /* Changed from relative to fixed */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000; /* Solid black base to hide the Home page */
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999; /* Higher than your Navbar z-index */
+}
+
+/* Ensure the Back button is inside this fixed container */
+.back-nav-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 100000;
+}
+
+.login-glass-card {
+  background: rgba(60, 10, 10, 0.85); /* Deep red translucent from UI */
+  backdrop-filter: blur(10px);
+  width: 380px;
+  padding: 40px 30px;
+  border-radius: 25px;
+  text-align: center;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.avatar-circle {
+  width: 70px;
+  height: 70px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 35px;
+}
+
+.login-content h2 {
+  color: white;
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+
+.subtitle {
+  color: #ccc;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.social-btn {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.social-btn img { width: 20px; }
+.social-btn.google { background: white; color: #333; }
+.social-btn.mail { background: white; color: #333; }
+
+.ui-separator {
+  margin: 20px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  position: relative;
+}
+
+.ui-separator span {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgb(83, 13, 13);
+  padding: 0 10px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.ui-input-group {
+  display: flex;
+  align-items: center;
+  background: none;
+  border-bottom: 2px solid white;
+  margin-bottom: 30px;
+  padding: 5px 0;
+}
+
+.ui-input-group .prefix {
+  color: white;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.ui-input-group input, .ui-field {
+  background: none !important;
+  border: none;
+  color: white !important;
+  outline: none;
+  width: 100%;
+  font-size: 16px;
+}
+
+.ui-field {
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  padding: 12px 5px;
+  margin-bottom: 15px;
+}
+
+.password-field-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field-wrap .password-field {
+  padding-right: 38px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 4px;
+  top: 42%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.ui-continue-btn {
+  background: #d1d1d1;
+  color: #000;
+  border: none;
+  width: 140px;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.otp-main-input {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  text-align: center;
+  letter-spacing: 10px;
+  font-size: 24px;
+  color: white;
+  width: 80%;
+  padding: 10px;
+}
+
+.resend-text { font-size: 12px; color: #aaa; margin: 15px 0; }
+.resend-text span { color: white; text-decoration: underline; cursor: pointer; }
+
+.guest-link {
+  margin-top: 20px;
+  color: #ff4d4d;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.password-checker {
+  text-align: left;
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+}
+
+.password-checker .rule-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.password-checker .rule-icon {
+  width: 16px;
+  text-align: center;
+}
+
+.password-checker .invalid {
+  color: #ff9f9f; /* Soft red for incomplete */
+}
+
+.password-checker .valid {
+  color: #9dff9d; /* Bright green for complete */
+  font-weight: bold;
+}
+
+.ui-continue-btn:disabled {
+  background: #555;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.inline-error-msg {
+  background: rgba(255, 77, 77, 0.2);
+  color: #ff9b9b;
+  border: 1px solid rgba(255, 77, 77, 0.4);
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin: 10px 0;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Ensure the toggle text is styled */
+.toggle-mode-text {
+  margin-top: 15px;
+  font-size: 13px;
+  color: #fff;
+}
+
+.toggle-mode-text span {
+  color: #ff4d4d;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: underline;
+  margin-left: 5px;
+}
+.status-box {
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin: 10px 0 14px;
+  text-align: center;
+  animation: slideIn 0.3s ease-out;
+  font-weight: 500;
+}
+
+.status-box.warning {
+  background: rgba(255, 196, 77, 0.18);
+  color: #ffd98a;
+  border: 1px solid rgba(255, 196, 77, 0.35);
+}
+
+.status-box.info {
+  background: rgba(99, 170, 255, 0.18);
+  color: #cde3ff;
+  border: 1px solid rgba(99, 170, 255, 0.35);
+}
+
+.status-box.error {
+  background: rgba(255, 77, 77, 0.2);
+  color: #ff9f9f;
+  border: 1px solid rgba(255, 77, 77, 0.3);
+}
+
+.status-box.success {
+  background: rgba(77, 255, 140, 0.2);
+  color: #9dffbc;
+  border: 1px solid rgba(77, 255, 140, 0.3);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.toggle-mode-text {
+  margin-top: 15px;
+  font-size: 13px;
+  color: #fff;
+}
+
+.toggle-mode-text span {
+  color: #ff4d4d;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: underline;
+  margin-left: 5px;
+}
