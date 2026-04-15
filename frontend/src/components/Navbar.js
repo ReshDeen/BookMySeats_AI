@@ -46,6 +46,8 @@ const Navbar = ({
         <div className="nav-center">
           <div className="search-container">
             <input
+              id="movieSearch"
+              name="movieSearch"
               type="text"
               placeholder="Search for movies..."
               value={searchValue}

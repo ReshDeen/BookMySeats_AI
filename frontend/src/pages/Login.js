@@ -330,14 +330,16 @@ const Login = ({ onLogin, onCancel }) => {
             
             {mode === 'signup' && (
               <>
-                <input className="ui-field" type="text" placeholder="Full Name" value={name} autoComplete="off" onChange={(e)=>setName(e.target.value)} />
-                <input className="ui-field" type="number" placeholder="Age" value={age} autoComplete="off" onChange={(e)=>setAge(e.target.value)} />
+                <input id="fullName" name="fullName" className="ui-field" type="text" placeholder="Full Name" value={name} autoComplete="off" onChange={(e)=>setName(e.target.value)} />
+                <input id="age" name="age" className="ui-field" type="number" placeholder="Age" value={age} autoComplete="off" onChange={(e)=>setAge(e.target.value)} />
               </>
             )}
             
-            <input className="ui-field" type="email" placeholder="Email Address" value={email} autoComplete="off" onChange={(e)=>setEmail(e.target.value)} />
+            <input id="email" name="email" className="ui-field" type="email" placeholder="Email Address" value={email} autoComplete="off" onChange={(e)=>setEmail(e.target.value)} />
             <div className="password-field-wrap">
               <input
+                id="password"
+                name="password"
                 className="ui-field password-field"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Password"

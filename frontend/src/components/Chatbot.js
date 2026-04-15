@@ -122,6 +122,8 @@ const ChatBot = ({ user, availableMovies, movieHistory }) => {
                     </div>
                     <div className="chat-input">
                         <input 
+                            id="chatMessage"
+                            name="chatMessage"
                             value={input}
                             onKeyDown={handleKeyDown}
                             onChange={(e) => setInput(e.target.value)}
