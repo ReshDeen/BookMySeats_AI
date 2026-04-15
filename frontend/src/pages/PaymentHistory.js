@@ -1,9 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import '../styles/AccountPages.css';
-import { fetchJson } from '../utils/api';
-
-const API_BASE_URL = (process.env.REACT_APP_API_BASE_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '')).trim();
-const buildApiUrl = (path) => (API_BASE_URL ? `${API_BASE_URL}${path}` : path);
+import { buildApiUrl, fetchJson } from '../utils/api';
 
 const PaymentHistory = ({ user }) => {
   const [history, setHistory] = useState([]);

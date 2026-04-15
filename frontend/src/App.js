@@ -113,7 +113,7 @@ function App() {
         const movies = await fetchJson('/api/movies');
         setAllMovies(movies || []);
         if (user && user.role !== 'guest') {
-          const history = await fetchJson(`/api/payments/user/${user.id || user._id}`);
+          const history = await fetchJson(`/api/payments/history/${user.id || user._id}`);
           setBookingHistory(history || []);
         }
       } catch (err) { setBookingHistory([]); }

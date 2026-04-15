@@ -1,12 +1,10 @@
 import React, { useMemo, useRef, useState } from 'react';
+import { buildApiUrl } from '../utils/api';
 import '../styles/Payment.css';
 
 const BOOKING_STORAGE_KEY = 'bookmyseat_currentBooking';
 const SEAT_SELECTION_STORAGE_KEY = 'bookmyseat_selectedSeats';
-const DEFAULT_API_BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
-const API_BASE_URL = (process.env.REACT_APP_API_BASE_URL || DEFAULT_API_BASE_URL).trim();
 const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_KEY_ID || 'rzp_test_SbiSdl0tXVdjyx';
-const buildApiUrl = (path) => (API_BASE_URL ? `${API_BASE_URL}${path}` : path);
 
 const Payment = ({ booking, user, onPaymentSuccess, onEditSeats, menuItems = [] }) => {
     const [activeMethod, setActiveMethod] = useState('UPI');

@@ -1,4 +1,5 @@
-const DEFAULT_API_BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
+const DEFAULT_PRODUCTION_API_BASE_URL = 'https://bookmyseats-ai-dekf.onrender.com';
+const DEFAULT_API_BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : DEFAULT_PRODUCTION_API_BASE_URL;
 const API_BASE_URL = (process.env.REACT_APP_API_BASE_URL || DEFAULT_API_BASE_URL).trim();
 
 export const buildApiUrl = (path) => (API_BASE_URL ? `${API_BASE_URL}${path}` : path);
