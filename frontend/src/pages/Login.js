@@ -12,6 +12,7 @@ import '../styles/Login.css';
 
 const Login = ({ onLogin, onCancel }) => {
   const onLoginRef = useRef(onLogin);
+  const isLocalDevelopment = typeof window !== 'undefined' && /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
   const [step, setStep] = useState('choice'); // choice, details
   const [mode, setMode] = useState('signup'); // signup, signin
   const [email, setEmail] = useState('');
@@ -146,6 +147,11 @@ const Login = ({ onLogin, onCancel }) => {
     clearStatus();
     setLoading(true);
     try {
+      if (!isLocalDevelopment) {
+        await signInWithRedirect(auth, googleProvider);
+        return;
+      }
+
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       const idToken = await user.getIdToken();
