@@ -2,7 +2,6 @@ import React from 'react';
 import '../styles/About.css';
 
 const About = ({ user }) => {
-  const displayName = user?.name || user?.displayName || 'Guest User';
   const techTags = ['React.js', 'Node.js', 'MongoDB', 'Express', 'JWT', 'Bcrypt'];
 
   return (

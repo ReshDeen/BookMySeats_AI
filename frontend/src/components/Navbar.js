@@ -22,7 +22,6 @@ const Navbar = ({
   // Determine the display name safely
   const displayName = user?.name || user?.displayName || (typeof user === 'string' ? user : 'Guest');
   const showHomeSearch = homeMode;
-  const showAboutButton = !compact && !homeMode && !minimalMode;
   const showLocationControls = !compact && !homeMode && !minimalMode;
   const showCenteredTitle = !homeMode && Boolean(pageTitle);
 
