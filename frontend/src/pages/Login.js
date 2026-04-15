@@ -3,7 +3,6 @@ import { auth, googleProvider } from '../firebase';
 import { 
   signInWithPopup, 
   signInWithRedirect,
-  getRedirectResult,
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword 
 } from "firebase/auth";
@@ -12,7 +11,6 @@ import '../styles/Login.css';
 
 const Login = ({ onLogin, onCancel }) => {
   const onLoginRef = useRef(onLogin);
-  const isLocalDevelopment = typeof window !== 'undefined' && /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
   const [step, setStep] = useState('choice'); // choice, details
   const [mode, setMode] = useState('signup'); // signup, signin
   const [email, setEmail] = useState('');
@@ -72,57 +70,6 @@ const Login = ({ onLogin, onCancel }) => {
     onLoginRef.current = onLogin;
   }, [onLogin]);
 
-  useEffect(() => {
-    const handleRedirectLogin = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (!result) return;
-
-        const user = result.user;
-        const idToken = await user.getIdToken();
-        const fallbackName = user.displayName || user.email?.split('@')[0] || 'User';
-
-        const response = await fetch(buildApiUrl('/api/auth/google-login'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            token: idToken,
-            email: user.email,
-            name: fallbackName,
-            googleId: user.uid,
-            uid: user.uid,
-            profilePicture: user.photoURL
-          })
-        });
-
-        if (!response.ok) {
-          const message = await readErrorMessage(response, `Backend returned ${response.status}`);
-          throw new Error(message);
-        }
-
-        const data = await response.json();
-        const normalizedGoogleUser = normalizeAuthUser(data.user, {
-          ...(data.user || {}),
-          uid: user.uid,
-          token: idToken,
-          email: user.email,
-          displayName: fallbackName,
-          name: fallbackName,
-          photoURL: user.photoURL,
-          provider: 'google',
-          type: 'google'
-        });
-
-        onLoginRef.current?.(normalizedGoogleUser);
-        showStatus('Google sign-in successful.', 'success');
-      } catch (error) {
-        console.error('Google redirect login failed:', error);
-      }
-    };
-
-    handleRedirectLogin();
-  }, []);
-
   const showStatus = (text, type = 'error') => {
     setStatusMessage({ text, type });
   };
@@ -161,11 +108,6 @@ const Login = ({ onLogin, onCancel }) => {
     clearStatus();
     setLoading(true);
     try {
-      if (!isLocalDevelopment) {
-        await signInWithRedirect(auth, googleProvider);
-        return;
-      }
-
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       const idToken = await user.getIdToken();
@@ -328,6 +270,11 @@ const Login = ({ onLogin, onCancel }) => {
         {step === 'choice' && (
           <div className="login-content">
             <h2>Get Started!</h2>
+            {statusMessage.text && (
+              <div className={`status-box ${statusMessage.type || 'info'}`}>
+                {statusMessage.text}
+              </div>
+            )}
             <button className="social-btn google" onClick={handleGoogleSuccess} disabled={loading}>
               <img src="https://cdn-icons-png.flaticon.com/128/300/300221.png" alt="Google" />
               {loading ? 'Connecting...' : 'Continue with Google'}

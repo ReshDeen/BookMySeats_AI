@@ -114,6 +114,21 @@ function App() {
         const fallbackName = firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User';
         const idToken = await firebaseUser.getIdToken();
 
+        const normalizedFromFirebase = normalizeUserProfile({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          name: fallbackName,
+          displayName: fallbackName,
+          provider: 'google',
+          type: 'google'
+        });
+
+        // Don't block navigation on backend sync; user should land on Home right after Google auth.
+        setUser(normalizedFromFirebase);
+        localStorage.setItem('user', JSON.stringify(normalizedFromFirebase));
+        setCurrentView('home');
+        setSidebarOpen(false);
+
         const response = await fetch(buildApiUrl('/api/auth/google-login'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -127,7 +142,10 @@ function App() {
           }),
         });
 
-        if (!response.ok) return;
+        if (!response.ok) {
+          console.error('Google backend sync failed:', response.status);
+          return;
+        }
 
         const data = await response.json();
         const normalized = normalizeUserProfile({
@@ -141,10 +159,8 @@ function App() {
 
         setUser(normalized);
         localStorage.setItem('user', JSON.stringify(normalized));
-        setCurrentView('home');
-        setSidebarOpen(false);
       } catch (error) {
-        console.warn('Google redirect handling skipped:', error);
+        console.error('Google redirect handling failed:', error);
       }
     };
 
