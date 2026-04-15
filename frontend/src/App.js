@@ -50,7 +50,12 @@ function App() {
   // ================ 1. STATE INITIALIZATION ================
   const [user, setUser] = useState(null);
   const [currentView, setCurrentView] = useState(() => {
-    return localStorage.getItem(VIEW_STORAGE_KEY) || 'home';
+    const savedUser = parseStoredJson('user');
+    const savedView = localStorage.getItem(VIEW_STORAGE_KEY);
+    if (!savedUser || savedUser.role !== 'guest') {
+      return savedView || 'login';
+    }
+    return savedView || 'home';
   });
   const [selectedMovie, setSelectedMovie] = useState(() => parseStoredJson(MOVIE_STORAGE_KEY));
   const [currentBooking, setCurrentBooking] = useState(() => parseStoredJson(BOOKING_STORAGE_KEY));
@@ -98,6 +103,13 @@ function App() {
     });
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!authLoading && !user && currentView !== 'login') {
+      setCurrentView('login');
+      setSidebarOpen(false);
+    }
+  }, [authLoading, user, currentView]);
 
   useEffect(() => {
     // Fail-safe redirect: any successful auth state should leave login screen immediately.
@@ -149,7 +161,7 @@ function App() {
     setSelectedMovie(null);
     setCurrentBooking(null);
     setBookingHistory([]);
-    setCurrentView('home');
+    setCurrentView('login');
     setSidebarOpen(false);
   };
 
