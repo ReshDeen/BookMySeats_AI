@@ -293,7 +293,7 @@ CRUD coverage:
 - ReshDeen (Reshma Banu T)
 
 ## License
-[Add your license: MIT / Apache-2.0 / Proprietary]
+..
 
 ---
 If this project helped you, consider starring the repository.
