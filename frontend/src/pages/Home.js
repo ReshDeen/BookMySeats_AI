@@ -22,12 +22,12 @@ const Home = ({ onSelectMovie, searchQuery = '' }) => {
     { id: '8', title: 'Mahaan', genre: 'Action/Drama', poster: '/images/mahaan.jpeg' },
     { id: '9', title: 'Jai Bhim', genre: 'Legal/Drama', poster: '/images/jaibeem.jpeg' },
     { id: '10', title: 'Raayan', genre: 'Action/Thriller', poster: '/images/Raayan.jpeg' },
-    { id: '11', title: 'Amaran', genre: 'Action/Thriller', poster: '/images/Amaran.jpeg' },
-    { id: '12', title: 'Thunivu', genre: 'Action/Thriller', poster: '/images/Thunivu.jpeg' },
-    { id: '13', title: 'Sirai', genre: 'Action/Thriller', poster: '/images/sirai.jpeg' },
-    { id: '14', title: 'Pathu Thala', genre: 'Action/Thriller', poster: '/images/Pathu.jpeg' },
-    { id: '14', title: 'Jana Nayagan', genre: 'Action/Thriller', poster: '/images/Jana.jpeg' },
-    { id: '15', title: 'Meiyazlagan', genre: 'Action/Thriller', poster: '/images/Mei.jpeg' }
+    { id: '11', title: 'Amaran', genre: 'Action/War', poster: '/images/Amaran.jpeg' },
+    { id: '12', title: 'Thunivu', genre: 'Action/Heist', poster: '/images/Thunivu.jpeg' },
+    { id: '13', title: 'Sirai', genre: 'Crime/Drama', poster: '/images/sirai.jpeg' },
+    { id: '14', title: 'Pathu Thala', genre: 'Action/Crime', poster: '/images/Pathu.jpeg' },
+    { id: '14', title: 'Jana Nayagan', genre: 'Action/Drama', poster: '/images/Jana.jpeg' },
+    { id: '15', title: 'Meiyazlagan', genre: 'Drama/Family', poster: '/images/Mei.jpeg' }
 
 
 
