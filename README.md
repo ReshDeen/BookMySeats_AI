@@ -291,8 +291,5 @@ CRUD coverage:
 ## Contributors
 - ReshDeen (Reshma Banu T)
 
-## License
-..
-
 ---
 If this project helped you, consider starring the repository.
