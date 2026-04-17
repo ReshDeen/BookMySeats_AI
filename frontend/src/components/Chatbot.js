@@ -50,23 +50,33 @@ const ChatBot = ({ user, availableMovies, movieHistory }) => {
             }));
 
         try {
-            const response = await fetch(buildApiUrl('/api/chat/message'), {
+            const requestBody = JSON.stringify({
+                userMessage: trimmedInput,
+                userProfile: {
+                    id: user?._id || user?.id || user?.uid,
+                    name: user?.name || user?.displayName || user?.email,
+                    age: userAge,
+                    dob: user?.dob,
+                    email: user?.email,
+                },
+                conversationHistory,
+                movieHistory: movieHistory || [],
+                availableMovies: availableMovies || []
+            });
+
+            let response = await fetch(buildApiUrl('/api/ai/recommend'), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    userMessage: trimmedInput,
-                    userProfile: {
-                        id: user?._id || user?.id || user?.uid,
-                        name: user?.name || user?.displayName || user?.email,
-                        age: userAge,
-                        dob: user?.dob,
-                        email: user?.email,
-                    },
-                    conversationHistory,
-                    movieHistory: movieHistory || [],
-                    availableMovies: availableMovies || []
-                }),
+                body: requestBody,
             });
+
+            if (!response.ok) {
+                response = await fetch(buildApiUrl('/api/chat/message'), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: requestBody,
+                });
+            }
 
             if (!response.ok) {
                 const errorText = await response.text();

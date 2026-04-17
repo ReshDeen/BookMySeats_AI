@@ -188,7 +188,8 @@ function App() {
         const movies = await fetchJson('/api/movies');
         setAllMovies(movies || []);
         if (user && user.role !== 'guest') {
-          const historyResponse = await fetchJson(`/api/payments/history/${user.id || user._id}`);
+          const emailQuery = user.email ? `?email=${encodeURIComponent(user.email)}` : '';
+          const historyResponse = await fetchJson(`/api/payments/history/${user.id || user._id || user.uid}${emailQuery}`);
           setBookingHistory(historyResponse?.history || []);
         }
       } catch (err) { setBookingHistory([]); }

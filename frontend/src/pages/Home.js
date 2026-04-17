@@ -23,9 +23,9 @@ const Home = ({ onSelectMovie, searchQuery = '' }) => {
     { id: '9', title: 'Jai Bhim', genre: 'Legal/Drama', poster: '/images/jaibeem.jpeg' },
     { id: '10', title: 'Raayan', genre: 'Action/Thriller', poster: '/images/Raayan.jpeg' },
     { id: '11', title: 'Amaran', genre: 'Action/Thriller', poster: '/images/Amaran.jpeg' },
-    // { id: '12', title: 'Thunivu', genre: 'Action/Thriller', poster: '/images/Thunivu.jpeg' },
-    { id: '12', title: 'Sirai', genre: 'Action/Thriller', poster: '/images/sirai.jpeg' },
-    { id: '13', title: 'Pathu Thala', genre: 'Action/Thriller', poster: '/images/Pathu.jpeg' },
+    { id: '12', title: 'Thunivu', genre: 'Action/Thriller', poster: '/images/Thunivu.jpeg' },
+    { id: '13', title: 'Sirai', genre: 'Action/Thriller', poster: '/images/sirai.jpeg' },
+    { id: '14', title: 'Pathu Thala', genre: 'Action/Thriller', poster: '/images/Pathu.jpeg' },
     { id: '14', title: 'Jana Nayagan', genre: 'Action/Thriller', poster: '/images/Jana.jpeg' },
     { id: '15', title: 'Meiyazlagan', genre: 'Action/Thriller', poster: '/images/Mei.jpeg' }
 

@@ -9,6 +9,7 @@ const authRoutes = require("./routes/authRoutes");
 const movieRoutes = require("./routes/movieRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const paymentRoutes = require("./routes/paymentRoutes"); // Ensure this contains your Razorpay logic
+const aiRoutes = require("./routes/aiRoutes");
 const chatbotRoutes = require("./routes/chatbotRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
@@ -74,6 +75,9 @@ app.use("/api/bookings", bookingRoutes);
 
 // Payment APIs (Where your Razorpay orders and verification happen)
 app.use("/api/payments", paymentRoutes);
+
+// AI Recommendations API
+app.use("/api/ai", aiRoutes);
 
 // Chatbot APIs
 app.use("/api/chat", chatbotRoutes);
