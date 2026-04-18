@@ -52,10 +52,10 @@ function App() {
   const [currentView, setCurrentView] = useState(() => {
     const savedUser = parseStoredJson('user');
     const savedView = localStorage.getItem(VIEW_STORAGE_KEY);
-    if (!savedUser || savedUser.role !== 'guest') {
-      return savedView || 'login';
+    if (savedView) {
+      return savedView;
     }
-    return savedView || 'home';
+    return 'home';
   });
   const [selectedMovie, setSelectedMovie] = useState(() => parseStoredJson(MOVIE_STORAGE_KEY));
   const [currentBooking, setCurrentBooking] = useState(() => parseStoredJson(BOOKING_STORAGE_KEY));
@@ -168,8 +168,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!authLoading && !user && currentView !== 'login') {
-      setCurrentView('login');
+    // Only auto-redirect to login if user navigates to a protected page but isn't logged in
+    const protectedViews = ['profile', 'payment-history', 'notifications', 'payment'];
+    if (!authLoading && !user && protectedViews.includes(currentView)) {
+      setCurrentView('home');
       setSidebarOpen(false);
     }
   }, [authLoading, user, currentView]);
@@ -225,7 +227,7 @@ function App() {
     setSelectedMovie(null);
     setCurrentBooking(null);
     setBookingHistory([]);
-    setCurrentView('login');
+    setCurrentView('home');
     setSidebarOpen(false);
   };
 
