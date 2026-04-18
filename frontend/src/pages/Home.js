@@ -26,8 +26,8 @@ const Home = ({ onSelectMovie, searchQuery = '' }) => {
     { id: '12', title: 'Thunivu', genre: 'Action/Heist', poster: '/images/Thunivu.jpeg' },
     { id: '13', title: 'Sirai', genre: 'Crime/Drama', poster: '/images/sirai.jpeg' },
     { id: '14', title: 'Pathu Thala', genre: 'Action/Crime', poster: '/images/Pathu.jpeg' },
-    { id: '14', title: 'Jana Nayagan', genre: 'Action/Drama', poster: '/images/Jana.jpeg' },
-    { id: '15', title: 'Meiyazlagan', genre: 'Drama/Family', poster: '/images/Mei.jpeg' }
+    { id: '15', title: 'Jana Nayagan', genre: 'Action/Drama', poster: '/images/Jana.jpeg' },
+    { id: '16', title: 'Meiyazlagan', genre: 'Drama/Family', poster: '/images/Mei.jpeg' }
 
 
 
