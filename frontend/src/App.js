@@ -72,6 +72,13 @@ function App() {
     id: movie.id || movie._id,
     title: movie.title || movie.name,
     genre: movie.genre || '',
+    poster: movie.poster || movie.img || '',
+    rating: movie.rating || null,
+    votes: movie.votes || '',
+    language: movie.language || '',
+    duration: movie.duration || '',
+    ageGroup: movie.ageGroup || '',
+    trending: Boolean(movie.trending),
   }));
   const bookingHistoryForChat = bookingHistory.map((booking) => ({
     id: booking.id || booking._id,
@@ -296,6 +303,35 @@ function App() {
     return matched || movie;
   };
 
+  const handleChatbotAction = (action) => {
+    if (!action?.type) return;
+
+    if (action.type === 'navigate') {
+      if (action.target === 'home') {
+        goBackToHome();
+        return;
+      }
+      if (action.target === 'login') {
+        openSignIn();
+        return;
+      }
+      if (['profile', 'payment-history', 'notifications', 'about'].includes(action.target)) {
+        navigateToView(action.target);
+      }
+      return;
+    }
+
+    if (action.type === 'book_movie') {
+      const targetMovie = resolveMovieSelection({ title: action.movieTitle, id: action.movieId });
+      if (targetMovie) {
+        setSelectedMovie(targetMovie);
+        setCurrentView('theater');
+        setSidebarOpen(false);
+      }
+      return;
+    }
+  };
+
   const navigationItems = [
     { key: 'home', label: 'Home', onClick: goBackToHome },
     { key: 'about', label: 'About', onClick: () => navigateToView('about') },
@@ -370,8 +406,18 @@ function App() {
       {shouldShowChatbot && (
         <Chatbot 
           user={user} 
+          currentView={currentView}
           availableMovies={normalizedMoviesForChat} 
           movieHistory={bookingHistoryForChat} 
+          onAction={handleChatbotAction}
+          onSelectMovie={(movie) => {
+            const resolved = resolveMovieSelection(movie);
+            if (resolved) {
+              setSelectedMovie(resolved);
+              setCurrentView('theater');
+              setSidebarOpen(false);
+            }
+          }}
         />
       )}
 

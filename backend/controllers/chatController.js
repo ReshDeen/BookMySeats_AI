@@ -98,6 +98,119 @@ const inferMood = (message = '') => {
   return null;
 };
 
+const detectIntent = (message = '') => {
+  const text = normalizeString(message);
+
+  if (!text) return 'general';
+  if (/(hi|hello|hey|good morning|good evening)/.test(text)) return 'greeting';
+  if (/(book|booking|seat|tickets|ticket|reserve|theater|theatre)/.test(text)) return 'booking';
+  if (/(pay|payment|card|upi|refund|transaction)/.test(text)) return 'payment';
+  if (/(profile|account|details|edit profile)/.test(text)) return 'profile';
+  if (/(history|past booking|previous booking|my bookings)/.test(text)) return 'history';
+  if (/(login|sign in|signin|logout|sign out|auth)/.test(text)) return 'auth';
+  if (/(recommend|suggest|movie|watch|action|drama|thriller|comedy|romance)/.test(text)) return 'recommendation';
+
+  return 'general';
+};
+
+const shouldRecommendMovies = (intent, message = '') => {
+  if (intent === 'booking' || intent === 'recommendation') return true;
+
+  const text = normalizeString(message);
+  return /(recommend|suggest|movie|movies|watch|genre|action|thriller|comedy|drama|romance|horror|family)/.test(text);
+};
+
+const buildQuickActions = ({ intent, userProfile, currentView, recommendations = [] }) => {
+  const hasUser = Boolean(userProfile?.id);
+  const actions = [];
+
+  if (intent === 'greeting' || intent === 'general') {
+    actions.push({ type: 'navigate', target: 'home', label: 'Go Home' });
+    actions.push(hasUser
+      ? { type: 'navigate', target: 'profile', label: 'Open Profile' }
+      : { type: 'navigate', target: 'login', label: 'Sign In' });
+  }
+
+  if ((intent === 'booking' || intent === 'recommendation') && recommendations.length > 0) {
+    if (recommendations[0]) {
+      actions.push({
+        type: 'book_movie',
+        label: `Book ${recommendations[0].title}`,
+        movieTitle: recommendations[0].title,
+      });
+    }
+    actions.push({ type: 'navigate', target: 'home', label: 'Browse Movies' });
+  }
+
+  if (intent === 'payment') {
+    actions.push(hasUser
+      ? { type: 'navigate', target: 'payment-history', label: 'View Payment History' }
+      : { type: 'navigate', target: 'login', label: 'Sign In for Payments' });
+  }
+
+  if (intent === 'profile') {
+    actions.push(hasUser
+      ? { type: 'navigate', target: 'profile', label: 'Open Profile' }
+      : { type: 'navigate', target: 'login', label: 'Sign In' });
+  }
+
+  if (intent === 'history') {
+    actions.push(hasUser
+      ? { type: 'navigate', target: 'payment-history', label: 'Open Booking History' }
+      : { type: 'navigate', target: 'login', label: 'Sign In to See History' });
+  }
+
+  if (currentView === 'theater') {
+    actions.push({ type: 'navigate', target: 'home', label: 'Back to Home' });
+  }
+
+  const unique = [];
+  const seen = new Set();
+  actions.forEach((action) => {
+    const key = `${action.type}-${action.target || ''}-${action.movieTitle || ''}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    unique.push(action);
+  });
+
+  return unique.slice(0, 5);
+};
+
+const buildPlatformFallbackReply = ({ intent, query, recommendations = [], userProfile = {} }) => {
+  const userName = userProfile?.name || 'there';
+  const recommendationLines = recommendations.length
+    ? recommendations.map((movie) => `- ${movie.title}${movie.genre ? ` (${movie.genre})` : ''}`).join('\n')
+    : '';
+
+  if (intent === 'greeting') {
+    return `Hi ${userName}. I can help with movie suggestions, booking flow, payment help, and finding the right page in BookMySeat AI.`;
+  }
+
+  if (intent === 'booking') {
+    return recommendations.length
+      ? `Great, let us book your show. Here are strong picks from your platform right now:\n${recommendationLines}`
+      : 'Great, let us book your show. Open Home, pick a movie, choose seats in Theater, then continue to Payment.';
+  }
+
+  if (intent === 'payment') {
+    return 'For payments, complete seat selection first, then continue on the Payment page. If a payment fails, retry from Payment and then check Payment History.';
+  }
+
+  if (intent === 'profile') {
+    return 'You can manage your personal details in Profile. Open Profile from the menu to update account information.';
+  }
+
+  if (intent === 'history') {
+    return 'Your booking and payment records are available in Payment History. You can open it directly from the menu.';
+  }
+
+  if (recommendations.length) {
+    return `Based on your query "${query}", here are platform-matched picks:\n${recommendationLines}`;
+  }
+
+  return 'I can help you with movie suggestions, booking guidance, payment support, and in-app navigation for BookMySeat AI.';
+};
+
 const getQueryKeywords = (message = '') => {
   const text = normalizeString(message);
   const keywords = new Set();
@@ -244,18 +357,21 @@ const buildGuaranteedRecommendations = (query, allMovies, rankedMovies) => {
   }));
 };
 
-const buildSystemPrompt = ({ age, mood, query, candidateMovies, movieHistory }) => {
+const buildSystemPrompt = ({ age, mood, query, candidateMovies, movieHistory, currentView }) => {
   return [
-    'You are a movie recommendation assistant for BookMySeat AI.',
+    'You are BookMySeat AI assistant for a movie booking platform.',
+    'Speak in a warm, natural, human tone. Keep responses short, clear, and helpful.',
+    'Answer both conversational and platform-help queries (booking flow, payment help, profile/help navigation).',
     'Only recommend movies from the provided movie list.',
     'Do not invent, guess, or suggest movies that are not in the list.',
     'If the user asks for a genre like action or thriller, pick only matching movies from the provided list.',
     'If there are no matches, say that no matching titles were found in the catalog.',
     'Return valid JSON only with this exact shape:',
-    '{"reply":"short conversational reply","recommendations":[{"title":"","genre":"","reason":""}]}',
+    '{"reply":"short conversational reply","recommendations":[{"title":"","genre":"","reason":""}],"quickActions":[{"type":"navigate|book_movie","target":"home|profile|payment-history|login|about|notifications","label":""}],"intent":"greeting|booking|payment|profile|history|recommendation|general|auth"}',
     'Keep the reply concise, friendly, and formatted for a chat UI.',
     `User age: ${age ?? 'unknown'}`,
     `Detected mood: ${mood ?? 'unknown'}`,
+    `Current app view: ${currentView || 'home'}`,
     `User query: ${query || 'unknown'}`,
     `Recent booking history: ${movieHistory.map((movie) => movie.title).filter(Boolean).slice(0, 10).join(', ') || 'No booking history'}`,
     `Movie catalog JSON: ${JSON.stringify(candidateMovies.slice(0, 20))}`,
@@ -307,12 +423,16 @@ const formatReply = (reply, recommendations) => {
 const generateRecommendations = async ({
   userMessage = '',
   userProfile = {},
+  appContext = {},
   movieHistory = [],
   availableMovies = [],
   conversationHistory = [],
 }) => {
+  const intent = detectIntent(userMessage);
+  const wantsRecommendations = shouldRecommendMovies(intent, userMessage);
   const age = inferAge(userProfile);
   const mood = inferMood(userMessage);
+  const currentView = appContext?.currentView || 'home';
   const allMovies = await fetchMovieCatalog(availableMovies);
   const { topMovies, ranked, queryKeywords } = buildCandidateMovies({
     query: userMessage,
@@ -326,11 +446,20 @@ const generateRecommendations = async ({
   console.log(`[AI] Query: "${userMessage}" | Candidates: ${candidates.length} | Keywords: ${queryKeywords.join(', ') || 'none'}`);
 
   const fallbackRecommendations = buildGuaranteedRecommendations(userMessage, allMovies, candidates);
+  const activeRecommendations = wantsRecommendations ? fallbackRecommendations : [];
 
   if (!openai || !OPENAI_KEY) {
+    const quickActions = buildQuickActions({ intent, userProfile, currentView, recommendations: activeRecommendations });
     return {
-      response: buildFallbackReply({ query: userMessage, recommendations: fallbackRecommendations }),
-      recommendations: fallbackRecommendations,
+      response: buildPlatformFallbackReply({
+        intent,
+        query: userMessage,
+        recommendations: activeRecommendations,
+        userProfile,
+      }),
+      recommendations: activeRecommendations,
+      quickActions,
+      intent,
       source: 'fallback',
       age,
       mood,
@@ -352,6 +481,7 @@ const generateRecommendations = async ({
           age,
           mood,
           query: userMessage,
+          currentView,
           candidateMovies: candidates,
           movieHistory,
         }),
@@ -363,7 +493,7 @@ const generateRecommendations = async ({
     const completion = await openai.chat.completions.create({
       model: DEFAULT_MODEL,
       messages: chatMessages,
-      temperature: 0.2,
+      temperature: 0.5,
       max_tokens: 450,
       response_format: { type: 'json_object' },
     });
@@ -378,21 +508,43 @@ const generateRecommendations = async ({
     }
 
     const recommendations = sanitizeRecommendations(parsed.recommendations || [], candidates);
-    const reply = formatReply(parsed.reply || '', recommendations.length ? recommendations : fallbackRecommendations);
-    const finalRecommendations = recommendations.length ? recommendations : fallbackRecommendations;
+    const modelRecommendations = recommendations.length ? recommendations : fallbackRecommendations;
+    const finalRecommendations = wantsRecommendations ? modelRecommendations : [];
+    const quickActions = buildQuickActions({
+      intent: parsed.intent || intent,
+      userProfile,
+      currentView,
+      recommendations: finalRecommendations,
+    });
+    const reply = parsed.reply || buildPlatformFallbackReply({
+      intent: parsed.intent || intent,
+      query: userMessage,
+      recommendations: finalRecommendations,
+      userProfile,
+    });
 
     return {
-      response: reply,
+      response: wantsRecommendations ? formatReply(reply, finalRecommendations) : reply,
       recommendations: finalRecommendations,
+      quickActions,
+      intent: parsed.intent || intent,
       source: 'openai',
       age,
       mood,
     };
   } catch (error) {
     console.log(`[AI] OpenAI request failed, using fallback. Reason: ${error.message}`);
+    const quickActions = buildQuickActions({ intent, userProfile, currentView, recommendations: activeRecommendations });
     return {
-      response: buildFallbackReply({ query: userMessage, recommendations: fallbackRecommendations }),
-      recommendations: fallbackRecommendations,
+      response: buildPlatformFallbackReply({
+        intent,
+        query: userMessage,
+        recommendations: activeRecommendations,
+        userProfile,
+      }),
+      recommendations: activeRecommendations,
+      quickActions,
+      intent,
       source: 'fallback',
       warning: error.message || 'AI model call failed, fallback response used',
       age,
@@ -406,6 +558,7 @@ const recommendMovies = async (req, res) => {
     const {
       userMessage = '',
       userProfile = {},
+      appContext = {},
       movieHistory = [],
       availableMovies = [],
       conversationHistory = [],
@@ -414,6 +567,7 @@ const recommendMovies = async (req, res) => {
     const result = await generateRecommendations({
       userMessage,
       userProfile,
+      appContext,
       movieHistory,
       availableMovies,
       conversationHistory,

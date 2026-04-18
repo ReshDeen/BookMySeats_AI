@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './ChatBot.css';
 import { buildApiUrl } from '../utils/api';
 
-const ChatBot = ({ user, availableMovies, movieHistory }) => {
+const ChatBot = ({ user, availableMovies, movieHistory, currentView, onAction, onSelectMovie }) => {
     const SERVICE_UNAVAILABLE_MESSAGE = 'I am unable to reach the AI service right now. Please make sure backend is running and try again.';
     const [messages, setMessages] = useState([
         {
@@ -58,6 +58,10 @@ const ChatBot = ({ user, availableMovies, movieHistory }) => {
                     age: userAge,
                     dob: user?.dob,
                     email: user?.email,
+                    role: user?.role || 'user',
+                },
+                appContext: {
+                    currentView: currentView || 'home',
                 },
                 conversationHistory,
                 movieHistory: movieHistory || [],
@@ -85,7 +89,15 @@ const ChatBot = ({ user, availableMovies, movieHistory }) => {
 
             const data = await response.json();
             setHasServiceErrorNotice(false);
-            setMessages((prev) => [...prev, { role: 'assistant', content: data.response || 'I could not generate a response right now. Please try again.' }]);
+            setMessages((prev) => [
+                ...prev,
+                {
+                    role: 'assistant',
+                    content: data.response || 'I could not generate a response right now. Please try again.',
+                    recommendations: Array.isArray(data.recommendations) ? data.recommendations : [],
+                    quickActions: Array.isArray(data.quickActions) ? data.quickActions : [],
+                },
+            ]);
         } catch (error) {
             if (!hasServiceErrorNotice) {
                 setMessages((prev) => [...prev, { role: 'assistant', content: SERVICE_UNAVAILABLE_MESSAGE }]);
@@ -120,7 +132,38 @@ const ChatBot = ({ user, availableMovies, movieHistory }) => {
                     <div className="chat-messages">
                         {messages.map((msg, i) => (
                             <div key={i} className={`message ${msg.role}`}>
-                                <div className="message-bubble">{msg.content}</div>
+                                <div className="message-bubble">
+                                    <div>{msg.content}</div>
+                                    {msg.role === 'assistant' && Array.isArray(msg.recommendations) && msg.recommendations.length > 0 && (
+                                        <div className="chat-recommendations">
+                                            {msg.recommendations.slice(0, 4).map((movie, idx) => (
+                                                <button
+                                                    key={`${movie.title}-${idx}`}
+                                                    type="button"
+                                                    className="chat-reco-card"
+                                                    onClick={() => onSelectMovie?.(movie)}
+                                                >
+                                                    <div className="chat-reco-title">{movie.title}</div>
+                                                    <div className="chat-reco-meta">{movie.genre || 'Genre not listed'}</div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                    {msg.role === 'assistant' && Array.isArray(msg.quickActions) && msg.quickActions.length > 0 && (
+                                        <div className="chat-quick-actions">
+                                            {msg.quickActions.slice(0, 4).map((action, idx) => (
+                                                <button
+                                                    key={`${action.label || action.target || action.type}-${idx}`}
+                                                    type="button"
+                                                    className="chat-action-btn"
+                                                    onClick={() => onAction?.(action)}
+                                                >
+                                                    {action.label || 'Open'}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ))}
                         {isSending && (
