@@ -7,13 +7,13 @@ const openai = OPENAI_KEY ? new OpenAIClient({ apiKey: OPENAI_KEY }) : null;
 const DEFAULT_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 
 const DEFAULT_MOVIE_CATALOG = [
-  { title: 'Amaran', genre: 'Action/Drama', poster: '/images/Amaran.jpeg', rating: 9.1, votes: '18K', trending: true },
+  { title: 'Amaran', genre: 'Action/War', poster: '/images/Amaran.jpeg', rating: 9.1, votes: '18K', trending: true },
   { title: 'Dhurandhar', genre: 'Action/Thriller', poster: '/images/durandhar.jpeg', rating: 9.7, votes: '3.1K', trending: true },
-  { title: 'Jana Nayagan', genre: 'Action/Thriller', poster: '/images/Jana.jpeg', rating: 9.0, votes: '12K', trending: true },
-  { title: 'Thunivu', genre: 'Action/Thriller', poster: '/images/Thunivu.jpeg', rating: 8.8, votes: '22K', trending: true },
-  { title: 'Sirai', genre: 'Action/Drama/Crime', poster: '/images/sirai.jpeg', rating: 9.7, votes: '3.1K', trending: false },
-  { title: 'Pathu Thala', genre: 'Action/Crime/Drama', poster: '/images/Pathu.jpeg', rating: 8.9, votes: '23.5K', trending: false },
-  { title: 'King of Kotha', genre: 'Action/Crime/Drama', poster: '/images/Kotha.jpeg', rating: 8.9, votes: '23.5K', trending: false },
+  { title: 'Jana Nayagan', genre: 'Action/Drama', poster: '/images/Jana.jpeg', rating: 9.0, votes: '12K', trending: true },
+  { title: 'Thunivu', genre: 'Action/Heist', poster: '/images/Thunivu.jpeg', rating: 8.8, votes: '22K', trending: true },
+  { title: 'Sirai', genre: 'Drama/Crime', poster: '/images/sirai.jpeg', rating: 9.7, votes: '3.1K', trending: false },
+  { title: 'Pathu Thala', genre: 'Action/Crime', poster: '/images/Pathu.jpeg', rating: 8.9, votes: '23.5K', trending: false },
+  { title: 'King of Kotha', genre: 'Action/Crime', poster: '/images/Kotha.jpeg', rating: 8.9, votes: '23.5K', trending: false },
   { title: 'The Paradise', genre: 'Action/Thriller', poster: '/images/Paradise.jpeg', rating: 9.2, votes: '10K', trending: false },
   { title: 'Raayan', genre: 'Action/Thriller', poster: '/images/Raayan.jpeg', rating: 8.7, votes: '14K', trending: false },
   { title: 'Bison', genre: 'Drama/Sports', poster: '/images/bison.jpeg', rating: 8.2, votes: '55', trending: false },
@@ -24,6 +24,7 @@ const DEFAULT_MOVIE_CATALOG = [
   { title: 'Sarpatta Parambarai', genre: 'Action/Sports', poster: '/images/sarpata.jpeg', rating: 8.6, votes: '11K', trending: false },
   { title: 'Meiyazlagan', genre: 'Drama/Family', poster: '/images/Mei.jpeg', rating: 8.0, votes: '4K', trending: false },
 ];
+
 
 const GENRE_KEYWORDS = {
   action: ['action', 'fight', 'combat', 'battle', 'war', 'aggressive'],
