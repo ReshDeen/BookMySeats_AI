@@ -124,7 +124,12 @@
 
 .seat-unit.available { background: transparent; color: #00ff00; border-color: #00ff00; }
 .seat-unit.selected { background: #00ff00 !important; color: black; border: none; }
-.seat-unit.booked { background: #333; color: #555; cursor: not-allowed; border-color: #222; }
+.seat-unit.booked {
+  background: #6f6f6f !important;
+  color: #f3f3f3 !important;
+  cursor: not-allowed;
+  border: 1px solid #8b8b8b !important;
+}
 
 /* LEGEND & PAY BUTTON */
 .custom-legend {
@@ -318,7 +323,10 @@
 
 .available-box { border: 1px solid #00ff00; }
 .selected-box { background: #00ff00; }
-.booked-box { background: #333; }
+.booked-box {
+  background: #6f6f6f;
+  border: 1px solid #8b8b8b;
+}
 
 /* Reduced Card Size */
 .reduced-card {

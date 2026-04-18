@@ -7,6 +7,40 @@ const mongoose = require("mongoose");
 
 const escapeRegex = (value) => String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+const resolveOrCreateMovieId = async ({ movieId, movieName, movieGenre, poster, language, duration, ageGroup }) => {
+  if (mongoose.Types.ObjectId.isValid(movieId)) {
+    const movieById = await Movie.findById(movieId).select("_id");
+    if (movieById) {
+      return movieById._id;
+    }
+  }
+
+  const safeMovieName = String(movieName || "").trim();
+  if (!safeMovieName) {
+    throw new Error("INVALID_MOVIE_DETAILS");
+  }
+
+  const movieByExactName = await Movie.findOne({
+    title: new RegExp(`^${escapeRegex(safeMovieName)}$`, "i")
+  }).select("_id");
+  if (movieByExactName) {
+    return movieByExactName._id;
+  }
+
+  const createdMovie = await Movie.create({
+    title: safeMovieName,
+    genre: String(movieGenre || "General").trim() || "General",
+    poster: String(poster || "").trim(),
+    language: String(language || "").trim(),
+    duration: String(duration || "").trim(),
+    ageGroup: String(ageGroup || "UA").trim() || "UA",
+    description: "Auto-created from successful booking flow",
+    trending: false,
+  });
+
+  return createdMovie._id;
+};
+
 // 1. Get all booked seats for a movie
 router.get("/seats/:movieId", async (req, res) => {
   try {
@@ -14,7 +48,11 @@ router.get("/seats/:movieId", async (req, res) => {
       return res.json({ bookedSeats: [] });
     }
 
-    const bookings = await Booking.find({ movieId: req.params.movieId });
+    const bookings = await Booking.find({
+      movieId: req.params.movieId,
+      paymentStatus: "completed",
+      status: "active"
+    });
     const bookedSeats = bookings.flatMap(b => b.seats);
     res.json({ bookedSeats });
   } catch (err) {
@@ -25,7 +63,25 @@ router.get("/seats/:movieId", async (req, res) => {
 // 2. Book seats
 router.post("/book", async (req, res) => {
   try {
-    const { userId, userEmail, movieId, movieName, seats, totalPrice, showDate, showTime } = req.body;
+    const {
+      userId,
+      userEmail,
+      movieId,
+      movieName,
+      movieGenre,
+      poster,
+      language,
+      duration,
+      ageGroup,
+      seats,
+      totalPrice,
+      showDate,
+      showTime
+    } = req.body;
+
+    if (!Array.isArray(seats) || seats.length === 0) {
+      return res.status(400).json({ error: "Please select at least one seat" });
+    }
 
     let resolvedUserId = userId;
     if (!mongoose.Types.ObjectId.isValid(resolvedUserId)) {
@@ -44,15 +100,15 @@ router.post("/book", async (req, res) => {
       resolvedUserId = user._id;
     }
 
-    let resolvedMovieId = movieId;
-    if (!mongoose.Types.ObjectId.isValid(resolvedMovieId)) {
-      const safeMovieName = String(movieName || "").trim();
-      const movie = await Movie.findOne({ title: new RegExp(`^${escapeRegex(safeMovieName)}$`, "i") }).select("_id");
-      if (!movie) {
-        return res.status(400).json({ error: "Invalid movie details" });
-      }
-      resolvedMovieId = movie._id;
-    }
+    const resolvedMovieId = await resolveOrCreateMovieId({
+      movieId,
+      movieName,
+      movieGenre,
+      poster,
+      language,
+      duration,
+      ageGroup,
+    });
 
     const parsedShowDate = showDate ? new Date(showDate) : null;
     if (!parsedShowDate || Number.isNaN(parsedShowDate.getTime())) {
@@ -83,6 +139,9 @@ router.post("/book", async (req, res) => {
       booking: savedBooking
     });
   } catch (err) {
+    if (err?.message === "INVALID_MOVIE_DETAILS") {
+      return res.status(400).json({ error: "Invalid movie details" });
+    }
     res.status(500).json({ error: "Unable to create booking" });
   }
 });
