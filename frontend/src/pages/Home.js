@@ -22,12 +22,12 @@ const Home = ({ onSelectMovie, searchQuery = '' }) => {
     { id: '8', title: 'Mahaan', genre: 'Action/Drama', poster: '/images/mahaan.jpeg' },
     { id: '9', title: 'Jai Bhim', genre: 'Legal/Drama', poster: '/images/jaibeem.jpeg' },
     { id: '10', title: 'Raayan', genre: 'Action/Thriller', poster: '/images/Raayan.jpeg' },
-    { id: '11', title: 'Amaran', genre: 'Action/Thriller', poster: '/images/Amaran.jpeg' },
-    { id: '12', title: 'Thunivu', genre: 'Action/Thriller', poster: '/images/Thunivu.jpeg' },
-    { id: '13', title: 'Sirai', genre: 'Action/Thriller', poster: '/images/sirai.jpeg' },
-    { id: '14', title: 'Pathu Thala', genre: 'Action/Thriller', poster: '/images/Pathu.jpeg' },
-    { id: '14', title: 'Jana Nayagan', genre: 'Action/Thriller', poster: '/images/Jana.jpeg' },
-    { id: '15', title: 'Meiyazlagan', genre: 'Action/Thriller', poster: '/images/Mei.jpeg' }
+    { id: '11', title: 'Amaran', genre: 'Action/War', poster: '/images/Amaran.jpeg' },
+    { id: '12', title: 'Thunivu', genre: 'Action/Heist', poster: '/images/Thunivu.jpeg' },
+    { id: '13', title: 'Sirai', genre: 'Crime/Drama', poster: '/images/sirai.jpeg' },
+    { id: '14', title: 'Pathu Thala', genre: 'Action/Crime', poster: '/images/Pathu.jpeg' },
+    { id: '15', title: 'Jana Nayagan', genre: 'Action/Drama', poster: '/images/Jana.jpeg' },
+    { id: '16', title: 'Meiyazlagan', genre: 'Drama/Family', poster: '/images/Mei.jpeg' }
 
 
 
@@ -37,7 +37,11 @@ const Home = ({ onSelectMovie, searchQuery = '' }) => {
 
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const filteredRecommendedMovies = normalizedSearchQuery
-    ? recommendedMovies.filter((movie) => movie.title.toLowerCase().includes(normalizedSearchQuery))
+    ? recommendedMovies.filter((movie) => {
+        const title = movie.title.toLowerCase();
+        const genre = (movie.genre || '').toLowerCase();
+        return title.includes(normalizedSearchQuery) || genre.includes(normalizedSearchQuery);
+      })
     : recommendedMovies;
 
   return (
@@ -71,8 +75,8 @@ const Home = ({ onSelectMovie, searchQuery = '' }) => {
         <h2 className="section-title">Recommended <span style={{color: '#ff4d4d'}}>Movies</span></h2> 
         {/* Note this */}
         <div className="movie-grid">
-          {filteredRecommendedMovies.map(movie => (
-            <div key={movie.id} className="movie-card-wrapper" onClick={() => onSelectMovie(movie)}>
+          {filteredRecommendedMovies.map((movie) => (
+            <div key={`${movie.id}-${movie.title}`} className="movie-card-wrapper" onClick={() => onSelectMovie(movie)}>
               <MovieCard movie={movie} />
             </div>
           ))}
