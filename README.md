@@ -17,11 +17,10 @@ Key capabilities include:
 
 ## Live Links
 - Frontend (Vercel): https://bookmyseatsai.vercel.app
-- Backend (Render): https://bookmyseats-ai-dekf.onrender.com
 - GitHub Repository: https://github.com/ReshDeen/BookMySeats_AI
-- Demo Video: 
-- Presentation/Poster:
-- Documentation:
+- Demo Video: https://drive.google.com/drive/folders/1fO87W4po4obHROGuEp61DLDqPpvNwa-o?usp=sharing
+- Presentation/Poster: https://drive.google.com/drive/folders/1kNIY_b7Wujbe8vOSg8bEeodpGoK_OHJ2?usp=sharing
+- Documentation: https://drive.google.com/drive/folders/1tNlCqAURCIBRV20HdkOcXjmCT3IFuCtd?usp=sharing
 
 ## Tech Stack
 
@@ -291,9 +290,6 @@ CRUD coverage:
 
 ## Contributors
 - ReshDeen (Reshma Banu T)
-
-## License
-..
 
 ---
 If this project helped you, consider starring the repository.
