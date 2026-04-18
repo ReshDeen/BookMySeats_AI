@@ -385,7 +385,8 @@
 
 .seats-scroll-area {
   flex: 1;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: auto;
   padding: 6px 0;
   margin-bottom: 6px;
 }
@@ -396,21 +397,21 @@
 }
 
 .seat-row {
-  min-width: 0 !important;
-  width: 100%;
+  min-width: max-content !important;
+  width: max-content;
   gap: 3px;
   margin-bottom: 4px;
 }
 
 .seat-unit {
-  width: 22px !important;
-  height: 22px !important;
-  font-size: 7px !important;
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 8px !important;
   margin: 0 1px;
 }
 
 .seat-aisle-gap {
-  width: 14px;
+  width: 18px;
 }
 
 .selection-summary {
@@ -437,5 +438,15 @@
   .theater-card-container.reduced-card {
     max-height: calc(100vh - 92px);
     height: auto;
+  }
+
+  .seat-unit {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 7px !important;
+  }
+
+  .seat-aisle-gap {
+    width: 14px;
   }
 }

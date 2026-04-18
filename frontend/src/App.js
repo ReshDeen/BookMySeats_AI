@@ -175,7 +175,7 @@ function App() {
 
   useEffect(() => {
     // Only auto-redirect to login if user navigates to a protected page but isn't logged in
-    const protectedViews = ['profile', 'payment-history', 'notifications', 'payment'];
+    const protectedViews = ['profile', 'payment-history', 'notifications'];
     if (!authLoading && !user && protectedViews.includes(currentView)) {
       setCurrentView('home');
       setSidebarOpen(false);
