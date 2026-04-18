@@ -50,7 +50,6 @@ function App() {
   // ================ 1. STATE INITIALIZATION ================
   const [user, setUser] = useState(null);
   const [currentView, setCurrentView] = useState(() => {
-    const savedUser = parseStoredJson('user');
     const savedView = localStorage.getItem(VIEW_STORAGE_KEY);
     if (savedView) {
       return savedView;
